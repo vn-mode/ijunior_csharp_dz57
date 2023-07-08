@@ -2,6 +2,55 @@
 using System.Collections.Generic;
 using System.Linq;
 
+public class Soldier
+{
+    private string name;
+
+    public string Name
+    {
+        get { return name; }
+        private set { name = value; }
+    }
+
+    public Soldier(string name)
+    {
+        Name = name;
+    }
+}
+
+public class Squad
+{
+    private List<Soldier> soldiers;
+
+    public Squad()
+    {
+        soldiers = new List<Soldier>();
+    }
+
+    public void AddSoldier(Soldier soldier)
+    {
+        soldiers.Add(soldier);
+    }
+
+    public void RemoveSoldier(Soldier soldier)
+    {
+        soldiers.Remove(soldier);
+    }
+
+    public IEnumerable<Soldier> GetSoldiers()
+    {
+        return soldiers.AsReadOnly();
+    }
+
+    public void PrintSquad()
+    {
+        foreach (var soldier in soldiers)
+        {
+            Console.WriteLine(soldier.Name);
+        }
+    }
+}
+
 class Program
 {
     static void Main(string[] args)
@@ -21,13 +70,7 @@ class Program
         Console.WriteLine("\nОтряд 2 до перевода:");
         squad2.PrintSquad();
 
-        var soldiersToTransfer = squad1.Soldiers.Where(s => s.Name.StartsWith("Б")).ToList();
-
-        foreach (var soldier in soldiersToTransfer)
-        {
-            squad1.RemoveSoldier(soldier);
-            squad2.AddSoldier(soldier);
-        }
+        TransferSoldiers(squad1, squad2);
 
         Console.WriteLine("\nОтряд 1 после перевода:");
         squad1.PrintSquad();
@@ -35,42 +78,15 @@ class Program
         Console.WriteLine("\nОтряд 2 после перевода:");
         squad2.PrintSquad();
     }
-}
 
-public class Soldier
-{
-    public string Name { get; set; }
-
-    public Soldier(string name)
+    private static void TransferSoldiers(Squad fromSquad, Squad toSquad)
     {
-        Name = name;
-    }
-}
+        var soldiersToTransfer = fromSquad.GetSoldiers().Where(soldier => soldier.Name.StartsWith("Б")).ToList();
 
-public class Squad
-{
-    public List<Soldier> Soldiers { get; private set; }
-
-    public Squad()
-    {
-        Soldiers = new List<Soldier>();
-    }
-
-    public void AddSoldier(Soldier soldier)
-    {
-        Soldiers.Add(soldier);
-    }
-
-    public void RemoveSoldier(Soldier soldier)
-    {
-        Soldiers.Remove(soldier);
-    }
-
-    public void PrintSquad()
-    {
-        foreach (var soldier in Soldiers)
+        foreach (var soldier in soldiersToTransfer)
         {
-            Console.WriteLine(soldier.Name);
+            fromSquad.RemoveSoldier(soldier);
+            toSquad.AddSoldier(soldier);
         }
     }
 }
