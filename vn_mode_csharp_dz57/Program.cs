@@ -4,13 +4,7 @@ using System.Linq;
 
 public class Soldier
 {
-    private string name;
-
-    public string Name
-    {
-        get { return name; }
-        private set { name = value; }
-    }
+    public string Name { get; private set; }
 
     public Soldier(string name)
     {
@@ -27,19 +21,9 @@ public class Squad
         soldiers = new List<Soldier>();
     }
 
-    public void AddSoldier(Soldier soldier)
+    public List<Soldier> GetSoldiers()
     {
-        soldiers.Add(soldier);
-    }
-
-    public void RemoveSoldier(Soldier soldier)
-    {
-        soldiers.Remove(soldier);
-    }
-
-    public IEnumerable<Soldier> GetSoldiers()
-    {
-        return soldiers.AsReadOnly();
+        return soldiers;
     }
 
     public void PrintSquad()
@@ -53,16 +37,22 @@ public class Squad
 
 class Program
 {
+    private const string TransferNameStart = "Б";
+
     static void Main(string[] args)
     {
         var squad1 = new Squad();
-        squad1.AddSoldier(new Soldier("Белов"));
-        squad1.AddSoldier(new Soldier("Алексеев"));
-        squad1.AddSoldier(new Soldier("Быков"));
+        squad1.GetSoldiers().AddRange(new List<Soldier> {
+            new Soldier("Белов"),
+            new Soldier("Алексеев"),
+            new Soldier("Быков")
+        });
 
         var squad2 = new Squad();
-        squad2.AddSoldier(new Soldier("Сидоров"));
-        squad2.AddSoldier(new Soldier("Кузнецов"));
+        squad2.GetSoldiers().AddRange(new List<Soldier> {
+            new Soldier("Сидоров"),
+            new Soldier("Кузнецов")
+        });
 
         Console.WriteLine("Отряд 1 до перевода:");
         squad1.PrintSquad();
@@ -81,12 +71,9 @@ class Program
 
     private static void TransferSoldiers(Squad fromSquad, Squad toSquad)
     {
-        var soldiersToTransfer = fromSquad.GetSoldiers().Where(soldier => soldier.Name.StartsWith("Б")).ToList();
+        var soldiersToTransfer = fromSquad.GetSoldiers().Where(soldier => soldier.Name.StartsWith(TransferNameStart)).ToList();
 
-        foreach (var soldier in soldiersToTransfer)
-        {
-            fromSquad.RemoveSoldier(soldier);
-            toSquad.AddSoldier(soldier);
-        }
+        fromSquad.GetSoldiers().RemoveAll(soldier => soldiersToTransfer.Contains(soldier));
+        toSquad.GetSoldiers().AddRange(soldiersToTransfer);
     }
 }
