@@ -14,7 +14,7 @@ public class Soldier
 
 public class Squad
 {
-    private List<Soldier> _soldiers;
+    private readonly List<Soldier> _soldiers;
 
     public Squad()
     {
@@ -26,18 +26,16 @@ public class Squad
         _soldiers.Add(soldier);
     }
 
-    public void AddSoldiers(IEnumerable<Soldier> soldiersToAdd)
+    public IEnumerable<Soldier> ExtractSoldiers(Func<Soldier, bool> predicate)
     {
-        _soldiers.AddRange(soldiersToAdd);
+        var soldiersToExtract = _soldiers.Where(predicate).ToList();
+        _soldiers.RemoveAll(soldier => soldiersToExtract.Contains(soldier));
+        return soldiersToExtract;
     }
 
-    public IEnumerable<Soldier> TransferSoldiers(Func<Soldier, bool> predicate)
+    public void IncludeSoldiers(IEnumerable<Soldier> soldiersToInclude)
     {
-        var soldiersToTransfer = _soldiers.Where(predicate).ToList();
-
-        _soldiers = _soldiers.Except(soldiersToTransfer).ToList();
-
-        return soldiersToTransfer;
+        _soldiers.AddRange(soldiersToInclude);
     }
 
     public void PrintSquad()
@@ -53,8 +51,6 @@ class Program
 {
     static void Main(string[] args)
     {
-        string transferNameStart = "Б";
-
         var squad1 = new Squad();
         squad1.AddSoldier(new Soldier("Белов"));
         squad1.AddSoldier(new Soldier("Алексеев"));
@@ -70,8 +66,8 @@ class Program
         Console.WriteLine("\nОтряд 2 до перевода:");
         squad2.PrintSquad();
 
-        var soldiersToTransfer = squad1.TransferSoldiers(soldier => soldier.Name.StartsWith(transferNameStart));
-        squad2.AddSoldiers(soldiersToTransfer);
+        var soldiersToTransfer = squad1.ExtractSoldiers(soldier => soldier.Name.StartsWith("Б"));
+        squad2.IncludeSoldiers(soldiersToTransfer);
 
         Console.WriteLine("\nОтряд 1 после перевода:");
         squad1.PrintSquad();
