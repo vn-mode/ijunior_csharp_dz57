@@ -34,16 +34,11 @@ class Program
 
 public class Soldier
 {
-    private string _name;
+    public string Name { get; private set; }
 
     public Soldier(string name)
     {
-        _name = name;
-    }
-
-    public string Name
-    {
-        get { return _name; }
+        Name = name;
     }
 }
 
@@ -61,10 +56,10 @@ public class Squad
         _soldiers.Add(soldier);
     }
 
-    public IEnumerable<Soldier> ExtractSoldiers(Func<Soldier, bool> predicate)
+    public IEnumerable<Soldier> ExtractSoldiers(Predicate<Soldier> predicate)
     {
-        List<Soldier> soldiersToExtract = _soldiers.Where(predicate).ToList();
-        _soldiers.RemoveAll(soldier => soldiersToExtract.Contains(soldier));
+        List<Soldier> soldiersToExtract = _soldiers.Where(soldier => predicate(soldier)).ToList();
+        _soldiers.RemoveAll(soldier => predicate(soldier));
         return soldiersToExtract;
     }
 
