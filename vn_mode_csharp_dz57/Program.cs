@@ -6,6 +6,8 @@ class Program
 {
     static void Main(string[] args)
     {
+        char letter = 'Б';
+
         Squad squad1 = new Squad();
         squad1.AddSoldier(new Soldier("Белов"));
         squad1.AddSoldier(new Soldier("Алексеев"));
@@ -21,8 +23,8 @@ class Program
         Console.WriteLine("\nОтряд 2 до перевода:");
         squad2.PrintSquad();
 
-        IEnumerable<Soldier> soldiersToTransfer = squad1.ExtractSoldiers(soldier => soldier.Name.StartsWith("Б"));
-        squad2.IncludeSoldiers(soldiersToTransfer);
+        IEnumerable<Soldier> soldiersToTransfer = squad1.GetSoldiers().Except(squad1.ExtractSoldiers(soldier => soldier.Name.StartsWith(letter))).Union(squad2.GetSoldiers());
+        squad2.SetSoldiers(soldiersToTransfer);
 
         Console.WriteLine("\nОтряд 1 после перевода:");
         squad1.PrintSquad();
@@ -56,16 +58,22 @@ public class Squad
         _soldiers.Add(soldier);
     }
 
+    public List<Soldier> GetSoldiers()
+    {
+        return _soldiers.ToList();
+    }
+
+    public void SetSoldiers(IEnumerable<Soldier> soldiers)
+    {
+        _soldiers.Clear();
+        _soldiers.AddRange(soldiers);
+    }
+
     public IEnumerable<Soldier> ExtractSoldiers(Predicate<Soldier> predicate)
     {
         List<Soldier> soldiersToExtract = _soldiers.Where(soldier => predicate(soldier)).ToList();
         _soldiers.RemoveAll(soldier => predicate(soldier));
         return soldiersToExtract;
-    }
-
-    public void IncludeSoldiers(IEnumerable<Soldier> soldiersToInclude)
-    {
-        _soldiers.AddRange(soldiersToInclude);
     }
 
     public void PrintSquad()
