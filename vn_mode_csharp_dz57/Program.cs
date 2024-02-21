@@ -8,79 +8,47 @@ class Program
     {
         char letter = 'Б';
 
-        Squad squad1 = new Squad();
-        squad1.AddSoldier(new Soldier("Белов"));
-        squad1.AddSoldier(new Soldier("Алексеев"));
-        squad1.AddSoldier(new Soldier("Быков"));
+        List<Soldier> squad1 = new List<Soldier>();
+        squad1.Add(new Soldier("Белов"));
+        squad1.Add(new Soldier("Алексеев"));
+        squad1.Add(new Soldier("Быков"));
 
-        Squad squad2 = new Squad();
-        squad2.AddSoldier(new Soldier("Сидоров"));
-        squad2.AddSoldier(new Soldier("Кузнецов"));
+        List<Soldier> squad2 = new List<Soldier>();
+        squad2.Add(new Soldier("Сидоров"));
+        squad2.Add(new Soldier("Кузнецов"));
 
         Console.WriteLine("Отряд 1 до перевода:");
-        squad1.PrintSquad();
+        PrintList(squad1);
 
         Console.WriteLine("\nОтряд 2 до перевода:");
-        squad2.PrintSquad();
+        PrintList(squad2);
 
-        IEnumerable<Soldier> soldiersToTransfer = squad1.GetSoldiers().Except(squad1.ExtractSoldiers(soldier => soldier.Name.StartsWith(letter))).Union(squad2.GetSoldiers());
-        squad2.SetSoldiers(soldiersToTransfer);
+        IEnumerable<Soldier> soldiersToTransfer = squad1.Where(soldier => soldier.Name.StartsWith(letter)).ToList();
+        squad2.AddRange(soldiersToTransfer);
+        squad1.RemoveAll(soldier => soldier.Name.StartsWith(letter));
 
         Console.WriteLine("\nОтряд 1 после перевода:");
-        squad1.PrintSquad();
+        PrintList(squad1);
 
         Console.WriteLine("\nОтряд 2 после перевода:");
-        squad2.PrintSquad();
+        PrintList(squad2);
+    }
+
+    static void PrintList(List<Soldier> list)
+    {
+        foreach (var item in list)
+        {
+            Console.WriteLine(item.Name);
+        }
     }
 }
 
 public class Soldier
 {
-    public string Name { get; private set; }
-
     public Soldier(string name)
     {
         Name = name;
     }
-}
 
-public class Squad
-{
-    private readonly List<Soldier> _soldiers;
-
-    public Squad()
-    {
-        _soldiers = new List<Soldier>();
-    }
-
-    public void AddSoldier(Soldier soldier)
-    {
-        _soldiers.Add(soldier);
-    }
-
-    public List<Soldier> GetSoldiers()
-    {
-        return _soldiers.ToList();
-    }
-
-    public void SetSoldiers(IEnumerable<Soldier> soldiers)
-    {
-        _soldiers.Clear();
-        _soldiers.AddRange(soldiers);
-    }
-
-    public IEnumerable<Soldier> ExtractSoldiers(Predicate<Soldier> predicate)
-    {
-        List<Soldier> soldiersToExtract = _soldiers.Where(soldier => predicate(soldier)).ToList();
-        _soldiers.RemoveAll(soldier => predicate(soldier));
-        return soldiersToExtract;
-    }
-
-    public void PrintSquad()
-    {
-        foreach (var soldier in _soldiers)
-        {
-            Console.WriteLine(soldier.Name);
-        }
-    }
+    public string Name { get; private set; }
 }
