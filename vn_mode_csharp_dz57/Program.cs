@@ -24,8 +24,8 @@ class Program
         PrintList(squad2);
 
         List<Soldier> soldiersToTransfer = squad1.Where(soldier => soldier.Name.StartsWith(letter)).ToList();
-        squad2 = squad2.Concat(soldiersToTransfer).ToList();
-        squad1 = squad1.Where(soldier => !soldier.Name.StartsWith(letter)).ToList();
+        squad2.AddRange(soldiersToTransfer);
+        squad1.RemoveAll(soldier => soldiersToTransfer.Contains(soldier));
 
         Console.WriteLine("\nОтряд 1 после перевода:");
         PrintList(squad1);
