@@ -8,14 +8,18 @@ class Program
     {
         char letter = 'Б';
 
-        List<Soldier> squad1 = new List<Soldier>();
-        squad1.Add(new Soldier("Белов"));
-        squad1.Add(new Soldier("Алексеев"));
-        squad1.Add(new Soldier("Быков"));
+        List<Soldier> squad1 = new List<Soldier>
+        {
+            new Soldier("Белов"),
+            new Soldier("Алексеев"),
+            new Soldier("Быков")
+        };
 
-        List<Soldier> squad2 = new List<Soldier>();
-        squad2.Add(new Soldier("Сидоров"));
-        squad2.Add(new Soldier("Кузнецов"));
+        List<Soldier> squad2 = new List<Soldier>
+        {
+            new Soldier("Сидоров"),
+            new Soldier("Кузнецов")
+        };
 
         Console.WriteLine("Отряд 1 до перевода:");
         PrintList(squad1);
@@ -23,9 +27,9 @@ class Program
         Console.WriteLine("\nОтряд 2 до перевода:");
         PrintList(squad2);
 
-        List<Soldier> soldiersToTransfer = squad1.Where(soldier => soldier.Name.StartsWith(letter)).ToList();
-        squad2.AddRange(soldiersToTransfer);
-        squad1.RemoveAll(soldier => soldiersToTransfer.Contains(soldier));
+        var soldiersToTransfer = squad1.Where(soldier => soldier.Name.StartsWith(letter)).ToList();
+        squad2 = squad2.Concat(soldiersToTransfer).ToList();
+        squad1 = squad1.Except(soldiersToTransfer).ToList();
 
         Console.WriteLine("\nОтряд 1 после перевода:");
         PrintList(squad1);
